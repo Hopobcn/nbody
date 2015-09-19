@@ -13,7 +13,7 @@
 #include <cuda_runtime.h>
 #include <cuda_gl_interop.h>
 
-#include <bodySystem.hpp>
+#include <vector_types.hpp>
 #include <cuda_runtime_api.h>
 
 __constant__ float softeningSquared;
@@ -126,10 +126,10 @@ bodyBodyInteraction(typename vec3<T>::Type ai,
 template <typename T>
 __device__ typename vec3<T>::Type
 computeBodyAccel(typename vec4<T>::Type bodyPos,
-                 typename vec4<T>::Type *positions,
+                 typename vec4<T>::VecType *positions,
                  int numTiles)
 {
-    typename vec4<T>::Type *sharedPos = SharedMemory<typename vec4<T>::Type>();
+    typename vec4<T>::VecType *sharedPos = SharedMemory<typename vec4<T>::VecType>();
 
     typename vec3<T>::Type acc = {0.0f, 0.0f, 0.0f};
 
@@ -155,9 +155,9 @@ computeBodyAccel(typename vec4<T>::Type bodyPos,
 
 template<typename T>
 __global__ void
-integrateBodies(typename vec4<T>::Type *__restrict__ newPos,
-                typename vec4<T>::Type *__restrict__ oldPos,
-                typename vec4<T>::Type *             vel,
+integrateBodies(typename vec4<T>::VecType *__restrict__ newPos,
+                typename vec4<T>::VecType *__restrict__ oldPos,
+                typename vec4<T>::VecType *             vel,
                 unsigned int deviceOffset, unsigned int deviceNumBodies,
                 T deltaTime, T damping, int numTiles)
 {
@@ -168,8 +168,8 @@ integrateBodies(typename vec4<T>::Type *__restrict__ newPos,
         typename vec4<T>::Type position = oldPos[deviceOffset + index];
 
         typename vec3<T>::Type accel = computeBodyAccel<T>(position,
-                oldPos,
-                numTiles);
+                                                           oldPos,
+                                                           numTiles);
 
         // acceleration = force / mass;
         // new velocity = old velocity + acceleration * deltaTime
@@ -184,8 +184,10 @@ integrateBodies(typename vec4<T>::Type *__restrict__ newPos,
         position += velocity * deltaTime;
 
         // store new position and velocity
-        newPos[deviceOffset + index] = position;
-        vel[deviceOffset + index]    = velocity;
+        typename vec4<T>::VecType newPosition = {position.x, position.y, position.z, position.w};
+        typename vec4<T>::VecType newVelocity = {velocity.x, velocity.y, velocity.z, velocity.w};
+        newPos[deviceOffset + index] = newPosition;
+        vel[deviceOffset + index]    = newVelocity;
     }
 }
 
@@ -222,9 +224,9 @@ void integrateNbodySystem(DeviceData<T> *deviceData,
         int sharedMemSize = blockSize * 4 * sizeof(T); // 4 floats for pos
 
         integrateBodies<T><<< numBlocks, blockSize, sharedMemSize >>>
-                        ((typename vec4<T>::Type *)deviceData[dev].dPos[1-currentRead],
-                         (typename vec4<T>::Type *)deviceData[dev].dPos[currentRead],
-                         (typename vec4<T>::Type *)deviceData[dev].dVel,
+                        ((typename vec4<T>::VecType *)deviceData[dev].dPos[1-currentRead],
+                         (typename vec4<T>::VecType *)deviceData[dev].dPos[currentRead],
+                         (typename vec4<T>::VecType *)deviceData[dev].dVel,
                                                    deviceData[dev].offset,
                                                    deviceData[dev].numBodies,
                                                    deltaTime, damping, numTiles);
