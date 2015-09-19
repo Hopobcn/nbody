@@ -14,7 +14,7 @@
 #include <cuda_gl_interop.h>
 
 #include <bodySystem.hpp>
-#include "../../../../../../../usr/local/cuda-7.0/targets/x86_64-linux/include/cuda_runtime_api.h"
+#include <cuda_runtime_api.h>
 
 __constant__ float softeningSquared;
 __constant__ double softeningSquared_fp64;
@@ -103,15 +103,11 @@ bodyBodyInteraction(typename vec3<T>::Type ai,
                     typename vec4<T>::Type bi,
                     typename vec4<T>::Type bj)
 {
-    typename vec3<T>::Type r;
-
     // r_ij  [3 FLOPS]
-    r.x = bj.x - bi.x;
-    r.y = bj.y - bi.y;
-    r.z = bj.z - bi.z;
+    typename vec3<T>::Type r = bj - bi;
 
     // distSqr = dot(r_ij, r_ij) + EPS^2  [6 FLOPS]
-    T distSqr = r.x * r.x + r.y * r.y + r.z * r.z;
+    T distSqr = r.dot();
     distSqr += getSofteningSquared<T>();
 
     // invDistCube =1/distSqr^(3/2)  [4 FLOPS (2 mul, 1 sqrt, 1 inv)]
@@ -122,9 +118,7 @@ bodyBodyInteraction(typename vec3<T>::Type ai,
     T s = bj.w * invDistCube;
 
     // a_i =  a_i + s * r_ij [6 FLOPS]
-    ai.x += r.x * s;
-    ai.y += r.y * s;
-    ai.z += r.z * s;
+    ai += r * s;
 
     return ai;
 }
@@ -165,7 +159,7 @@ integrateBodies(typename vec4<T>::Type *__restrict__ newPos,
                 typename vec4<T>::Type *__restrict__ oldPos,
                 typename vec4<T>::Type *             vel,
                 unsigned int deviceOffset, unsigned int deviceNumBodies,
-                float deltaTime, float damping, int numTiles)
+                T deltaTime, T damping, int numTiles)
 {
     for ( int index = blockIdx.x * blockDim.x + threadIdx.x;
               index < deviceNumBodies;
@@ -183,18 +177,11 @@ integrateBodies(typename vec4<T>::Type *__restrict__ newPos,
         // (because they cancel out).  Thus here force == acceleration
         typename vec4<T>::Type velocity = vel[deviceOffset + index];
 
-        velocity.x += accel.x * deltaTime;
-        velocity.y += accel.y * deltaTime;
-        velocity.z += accel.z * deltaTime;
-
-        velocity.x *= damping;
-        velocity.y *= damping;
-        velocity.z *= damping;
+        velocity += accel * deltaTime;
+        velocity *= damping;
 
         // new position = old position + velocity * deltaTime
-        position.x += velocity.x * deltaTime;
-        position.y += velocity.y * deltaTime;
-        position.z += velocity.z * deltaTime;
+        position += velocity * deltaTime;
 
         // store new position and velocity
         newPos[deviceOffset + index] = position;
