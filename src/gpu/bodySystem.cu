@@ -38,13 +38,13 @@ cudaError_t setSofteningSquared(double softeningSq)
 template<class T>
 struct SharedMemory
 {
-    __device__ inline operator       T *()
+    DEVICE_INLINE operator       T *()
     {
         extern __shared__ int __smem[];
         return (T *)__smem;
     }
 
-    __device__ inline operator const T *() const
+    DEVICE_INLINE operator const T *() const
     {
         extern __shared__ int __smem[];
         return (T *)__smem;
@@ -52,19 +52,19 @@ struct SharedMemory
 };
 
 template<typename T>
-__device__ T rsqrt_T(T x)
+DEVICE_INLINE T rsqrt_T(T x)
 {
-return rsqrt(x);
+    return rsqrt(x);
 }
 
 template<>
-__device__ float rsqrt_T<float>(float x)
+DEVICE_INLINE float rsqrt_T<float>(float x)
 {
     return rsqrtf(x);
 }
 
 template<>
-__device__ double rsqrt_T<double>(double x)
+DEVICE_INLINE double rsqrt_T<double>(double x)
 {
     return rsqrt(x);
 }
@@ -76,12 +76,12 @@ __device__ double rsqrt_T<double>(double x)
 #define SX_SUM(i,j) sharedPos[i+blockDim.x*j]
 
 template <typename T>
-__device__ T getSofteningSquared()
+DEVICE_INLINE T getSofteningSquared()
 {
     return softeningSquared;
 }
 template <>
-__device__ double getSofteningSquared<double>()
+DEVICE_INLINE double getSofteningSquared<double>()
 {
     return softeningSquared_fp64;
 }
@@ -98,7 +98,7 @@ struct DeviceData
 
 
 template <typename T>
-__device__ typename vec3<T>::Type
+DEVICE_INLINE typename vec3<T>::Type
 bodyBodyInteraction(typename vec3<T>::Type ai,
                     typename vec4<T>::Type bi,
                     typename vec4<T>::Type bj)
@@ -124,7 +124,7 @@ bodyBodyInteraction(typename vec3<T>::Type ai,
 }
 
 template <typename T>
-__device__ typename vec3<T>::Type
+DEVICE_INLINE typename vec3<T>::Type
 computeBodyAccel(typename vec4<T>::Type bodyPos,
                  typename vec4<T>::VecType *positions,
                  int numTiles)
@@ -184,10 +184,8 @@ integrateBodies(typename vec4<T>::VecType *__restrict__ newPos,
         position += velocity * deltaTime;
 
         // store new position and velocity
-        typename vec4<T>::VecType newPosition = {position.x, position.y, position.z, position.w};
-        typename vec4<T>::VecType newVelocity = {velocity.x, velocity.y, velocity.z, velocity.w};
-        newPos[deviceOffset + index] = newPosition;
-        vel[deviceOffset + index]    = newVelocity;
+        newPos[deviceOffset + index] = static_cast<typename vec4<T>::VecType>(position);
+        vel[deviceOffset + index]    = static_cast<typename vec4<T>::VecType>(velocity);
     }
 }
 
@@ -204,11 +202,11 @@ void integrateNbodySystem(DeviceData<T> *deviceData,
 {
     if (bUsePBO)
     {
-        cudaGraphicsResourceSetMapFlags(pgres[currentRead], cudaGraphicsMapFlagsReadOnly);
+        cudaGraphicsResourceSetMapFlags(pgres[currentRead],   cudaGraphicsMapFlagsReadOnly);
         cudaGraphicsResourceSetMapFlags(pgres[1-currentRead], cudaGraphicsMapFlagsWriteDiscard);
         cudaGraphicsMapResources(2, pgres, 0);
         size_t bytes;
-        cudaGraphicsResourceGetMappedPointer((void **)&(deviceData[0].dPos[currentRead]), &bytes, pgres[currentRead]);
+        cudaGraphicsResourceGetMappedPointer((void **)&(deviceData[0].dPos[currentRead]),   &bytes, pgres[currentRead]);
         cudaGraphicsResourceGetMappedPointer((void **)&(deviceData[0].dPos[1-currentRead]), &bytes, pgres[1-currentRead]);
     }
 

@@ -13,25 +13,25 @@ struct vec4;
 
 template <typename T>
 struct vector_type_traits {
-    typedef T VecType;
+    using VecType = T;
 };
 
 template <>
 struct vector_type_traits<vec3<float>> {
-    typedef float3 VecType;
+    using VecType = float3;
 };
 
 template <>
 struct vector_type_traits<vec3<double>> {
-    typedef double3 VecType;
+    using VecType = double3;
 };
 
 template <>
 struct vector_type_traits<vec4<float>> {
-    typedef float4 VecType;
+    using VecType = float4;
 };
 
 template <>
 struct vector_type_traits<vec4<double>> {
-    typedef double4 VecType;
+    using VecType = double4;
 };

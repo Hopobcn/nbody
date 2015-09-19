@@ -10,9 +10,9 @@
 
 template <typename T>
 struct vec3 {
-    typedef vec3<T>                                     Type;
-    typedef typename vector_type_traits<Type>::VecType  VecType;
-    typedef T                                           BaseType;
+    using Type     = vec3<T>;
+    using VecType  = typename vector_type_traits<Type>::VecType;
+    using BaseType = T;
 
     T x;
     T y;
@@ -87,23 +87,11 @@ HOST_DEVICE_INLINE vec3<T> operator*(T scalar, vec3<T> lhs) {
     return lhs *= scalar;
 }
 
-#if 0
-template <>
-struct vec3<float> {
-    typedef float3 Type;
-};
-
-template <>
-struct vec3<double> {
-    typedef double3 Type;
-};
-#endif
-
 template <typename T>
 struct vec4 {
-    typedef vec4<T>                                    Type;
-    typedef typename vector_type_traits<Type>::VecType VecType;
-    typedef T                                          BaseType;
+    using Type     = vec4<T>;
+    using VecType  = typename vector_type_traits<Type>::VecType;
+    using BaseType = T;
 
     T x; // x component
     T y; // y component
@@ -120,6 +108,10 @@ struct vec4 {
     HOST_DEVICE_INLINE vec4(BaseType x, BaseType y, BaseType z, BaseType w)
             : x{x}, y{y}, z{z}, w{w}
     {}
+
+    HOST_DEVICE_INLINE explicit operator VecType() const {
+        return {x, y, z, w};
+    }
 
     HOST_DEVICE_INLINE Type& operator+=(const Type other) {
         x += other.x;
