@@ -29,24 +29,24 @@ struct vec3 {
             : x{x}, y{y}, z{z}
     {}
 
-    HOST_DEVICE_INLINE Type& operator+=(const Type other) {
-        x += other.x;
-        y += other.y;
-        z += other.z;
+    HOST_DEVICE_INLINE Type& operator+=(const Type& lhs) {
+        x += lhs.x;
+        y += lhs.y;
+        z += lhs.z;
         return *this;
     }
 
-    HOST_DEVICE_INLINE Type& operator-=(const Type other) {
-        x -= other.x;
-        y -= other.y;
-        z -= other.z;
+    HOST_DEVICE_INLINE Type& operator-=(const Type& lhs) {
+        x -= lhs.x;
+        y -= lhs.y;
+        z -= lhs.z;
         return *this;
     }
 
-    HOST_DEVICE_INLINE Type& operator*=(const Type other) {
-        x *= other.x;
-        y *= other.y;
-        z *= other.z;
+    HOST_DEVICE_INLINE Type& operator*=(const Type& lhs) {
+        x *= lhs.x;
+        y *= lhs.y;
+        z *= lhs.z;
         return *this;
     }
 
@@ -56,40 +56,73 @@ struct vec3 {
         z *= scalar;
         return *this;
     }
-
-    HOST_DEVICE_INLINE BaseType dot() const {
-        return x*x + y*y + z*z;
-    }
 };
 
 template <typename T>
-HOST_DEVICE_INLINE vec3<T> operator+(vec3<T> rhs, vec3<T> lhs) {
-    return rhs += lhs;
+HOST_DEVICE_INLINE vec3<T> operator+(const vec3<T>& a, const vec3<T>& b) {
+    vec3<T> r;
+    r.x = a.x + b.x;
+    r.y = a.y + b.y;
+    r.z = a.z + b.z;
+    return r;
 }
 
 template <typename T>
-HOST_DEVICE_INLINE vec3<T> operator-(vec3<T> rhs, vec3<T> lhs) {
-    return rhs -= lhs;
+HOST_DEVICE_INLINE vec3<T> operator-(const vec3<T>& a, const vec3<T>& b) {
+    vec3<T> r;
+    r.x = a.x - b.x;
+    r.y = a.y - b.y;
+    r.z = a.z - b.z;
+    return r;
 }
 
 template <typename T>
-HOST_DEVICE_INLINE vec3<T> operator*(vec3<T> rhs, vec3<T> lhs) {
-    return rhs *= lhs;
+HOST_DEVICE_INLINE vec3<T> operator*(const vec3<T>& a, const vec3<T>& b) {
+    vec3<T> r;
+    r.x = a.x * b.x;
+    r.y = a.y * b.y;
+    r.z = a.z * b.z;
+    return r;
 }
 
 template <typename T>
-HOST_DEVICE_INLINE vec3<T> operator*(vec3<T> rhs, T scalar) {
-    return rhs *= scalar;
+HOST_DEVICE_INLINE vec3<T> operator*(const vec3<T>& a, T scalar) {
+    vec3<T> r;
+    r.x = a.x * scalar;
+    r.y = a.y * scalar;
+    r.z = a.z * scalar;
+    return r;
 }
 
 template <typename T>
-HOST_DEVICE_INLINE vec3<T> operator*(T scalar, vec3<T> lhs) {
-    return lhs *= scalar;
+HOST_DEVICE_INLINE vec3<T> operator*(T scalar, const vec3<T>& a) {
+    vec3<T> r;
+    r.x = a.x * scalar;
+    r.y = a.y * scalar;
+    r.z = a.z * scalar;
+    return r;
 }
+
+template <typename T>
+HOST_DEVICE_INLINE T dot(const vec3<T>& a, const vec3<T>& b) {
+    vec3<T> r;
+    r.x = a.x * b.x;
+    r.y = a.y * b.y;
+    r.z = a.z * b.z;
+    return r.x + r.y + r.z;
+}
+
+template <typename T>
+HOST_DEVICE_INLINE T euclideanDist(const vec3<T>& a, const vec3<T>& b) {
+    vec3<T> r = a - b;
+    return sqrt(dot(r, r));
+}
+
 
 template <typename T>
 struct vec4 {
     using Type     = vec4<T>;
+    using Type3    = vec3<T>;
     using VecType  = typename vector_type_traits<Type>::VecType;
     using BaseType = T;
 
@@ -120,24 +153,24 @@ struct vec4 {
         return *this;
     }
 
-    HOST_DEVICE_INLINE Type& operator+=(const vec3<T> other) {
-        x += other.x;
-        y += other.y;
-        z += other.z;
+    HOST_DEVICE_INLINE Type& operator+=(const Type3& lhs) {
+        x += lhs.x;
+        y += lhs.y;
+        z += lhs.z;
         return *this;
     }
 
-    HOST_DEVICE_INLINE Type& operator-=(const Type other) {
-        x -= other.x;
-        y -= other.y;
-        z -= other.z;
+    HOST_DEVICE_INLINE Type& operator-=(const Type& lhs) {
+        x -= lhs.x;
+        y -= lhs.y;
+        z -= lhs.z;
         return *this;
     }
 
-    HOST_DEVICE_INLINE Type& operator*=(const Type other) {
-        x *= other.x;
-        y *= other.y;
-        z *= other.z;
+    HOST_DEVICE_INLINE Type& operator*=(const Type& lhs) {
+        x *= lhs.x;
+        y *= lhs.y;
+        z *= lhs.z;
         return *this;
     }
 
@@ -151,38 +184,48 @@ struct vec4 {
 };
 
 template <typename T>
-HOST_DEVICE_INLINE vec4<T> operator*(vec4<T> rhs, T scalar) {
-    return rhs *= scalar;
+HOST_DEVICE_INLINE vec4<T> operator*(const vec4<T>& a, T scalar) {
+    vec4<T> r;
+    r.x = a.x * scalar;
+    r.y = a.y * scalar;
+    r.z = a.z * scalar;
+    r.w = a.w * scalar;
+    return r;
 }
 
 template <typename T>
-HOST_DEVICE_INLINE vec4<T> operator*(T scalar, vec4<T> lhs) {
-    return lhs *= scalar;
+HOST_DEVICE_INLINE vec4<T> operator*(T scalar, const vec4<T>& a) {
+    vec4<T> r;
+    r.x = a.x * scalar;
+    r.y = a.y * scalar;
+    r.z = a.z * scalar;
+    r.w = a.w * scalar;
+    return r;
 }
 
 template <typename T>
-HOST_DEVICE_INLINE vec3<T> operator+(vec4<T> rhs, vec4<T> lhs) {
-    vec3<T> ret;
-    ret.x = rhs.x + lhs.x;
-    ret.y = rhs.y + lhs.y;
-    ret.z = rhs.z + lhs.z;
-    return ret;
+HOST_DEVICE_INLINE vec3<T> operator+(const vec4<T>& a, const vec4<T>& b) {
+    vec3<T> r;
+    r.x = a.x + b.x;
+    r.y = a.y + b.y;
+    r.z = a.z + b.z;
+    return r;
 }
 
 template <typename T>
-HOST_DEVICE_INLINE vec3<T> operator-(vec4<T> rhs, vec4<T> lhs) {
-    vec3<T> ret;
-    ret.x = rhs.x - lhs.x;
-    ret.y = rhs.y - lhs.y;
-    ret.z = rhs.z - lhs.z;
-    return ret;
+HOST_DEVICE_INLINE vec3<T> operator-(const vec4<T>& a, const vec4<T>& b) {
+    vec3<T> r;
+    r.x = a.x - b.x;
+    r.y = a.y - b.y;
+    r.z = a.z - b.z;
+    return r;
 }
 
 template <typename T>
-HOST_DEVICE_INLINE vec3<T> operator*(vec4<T> rhs, vec4<T> lhs) {
-    vec3<T> ret;
-    ret.x = rhs.x * lhs.x;
-    ret.y = rhs.y * lhs.y;
-    ret.z = rhs.z * lhs.z;
-    return ret;
+HOST_DEVICE_INLINE vec3<T> operator*(const vec4<T>& a, const vec4<T>& b) {
+    vec3<T> r;
+    r.x = a.x * b.x;
+    r.y = a.y * b.y;
+    r.z = a.z * b.z;
+    return r;
 }

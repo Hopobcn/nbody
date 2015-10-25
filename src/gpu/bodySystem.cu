@@ -107,12 +107,12 @@ bodyBodyInteraction(typename vec3<T>::Type ai,
     typename vec3<T>::Type r = bj - bi;
 
     // distSqr = dot(r_ij, r_ij) + EPS^2  [6 FLOPS]
-    T distSqr = r.dot();
-    distSqr += getSofteningSquared<T>();
+    T distSqr = dot(r, r);
+    distSqr  += getSofteningSquared<T>();
 
     // invDistCube =1/distSqr^(3/2)  [4 FLOPS (2 mul, 1 sqrt, 1 inv)]
-    T invDist = rsqrt_T(distSqr);
-    T invDistCube =  invDist * invDist * invDist;
+    T invDist     = rsqrt_T(distSqr);
+    T invDistCube = invDist * invDist * invDist;
 
     // s = m_j * invDistCube [1 FLOP]
     T s = bj.w * invDistCube;
