@@ -1,4 +1,3 @@
-include_directories( "../../include" "/usr/local/cuda/include" ${GLEW_INCLUDE_DIRS} SYSTEM ${INCLUDE_DIRS})
 set(CUDA_PROPAGATE_HOST_FLAGS OFF)
 cuda_add_library(libgpunbody STATIC bodySystem.cu
                  OPTIONS
