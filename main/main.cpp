@@ -312,13 +312,13 @@ private:
         {
             m_nbodyCpu = new BodySystemCPU<T>(numBodies);
             m_nbody = m_nbodyCpu;
-            m_nbodyCuda = 0;
+            m_nbodyCuda = nullptr;
         }
         else
         {
             m_nbodyCuda = new BodySystemGPU<T>(numBodies, numDevices, blockSize, bUsePBO, useHostMem);
             m_nbody = m_nbodyCuda;
-            m_nbodyCpu = 0;
+            m_nbodyCpu = nullptr;
         }
 
         // allocate host memory

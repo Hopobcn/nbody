@@ -190,29 +190,21 @@ void bodyBodyInteraction(T accel[3], T posMass0[4], T posMass1[4], T softeningSq
 template <typename T>
 void BodySystemCPU<T>::_computeNBodyGravitation()
 {
-#ifdef OPENMP
-    #pragma omp parallel for
-#endif
+    unsigned num_bodies = m_numBodies;
+    T softeningSquared  = m_softeningSquared;
 
-    for (int i = 0; i < m_numBodies; i++)
+#ifdef OPENMP
+    #pragma omp parallel for schedule(static, 1024) firstprivate(num_bodies, softeningSquared)
+#endif
+    for (int i = 0; i < num_bodies; i++)
     {
         int indexForce = 3*i;
 
         T acc[3] = {0, 0, 0};
 
-        // We unroll this loop 4X for a small performance boost.
-        int j = 0;
-
-        while (j < m_numBodies)
+        for (int j = 0; j < num_bodies; j++)
         {
-            bodyBodyInteraction<T>(acc, &m_pos[4*i], &m_pos[4*j], m_softeningSquared);
-            j++;
-            bodyBodyInteraction<T>(acc, &m_pos[4*i], &m_pos[4*j], m_softeningSquared);
-            j++;
-            bodyBodyInteraction<T>(acc, &m_pos[4*i], &m_pos[4*j], m_softeningSquared);
-            j++;
-            bodyBodyInteraction<T>(acc, &m_pos[4*i], &m_pos[4*j], m_softeningSquared);
-            j++;
+            bodyBodyInteraction<T>(acc, &m_pos[4*i], &m_pos[4*j], softeningSquared);
         }
 
         m_force[indexForce  ] = acc[0];
@@ -226,13 +218,14 @@ void BodySystemCPU<T>::_integrateNBodySystem(T deltaTime)
 {
     _computeNBodyGravitation();
 
-#ifdef OPENMP
-    #pragma omp parallel for
-#endif
+    T damping = m_damping;
 
+#ifdef OPENMP
+    #pragma omp parallel for schedule(static, 1024) firstprivate(damping)
+#endif
     for (int i = 0; i < m_numBodies; ++i)
     {
-        int index = 4*i;
+        int index      = 4*i;
         int indexForce = 3*i;
 
 
@@ -256,9 +249,9 @@ void BodySystemCPU<T>::_integrateNBodySystem(T deltaTime)
         vel[1] += (force[1] * invMass) * deltaTime;
         vel[2] += (force[2] * invMass) * deltaTime;
 
-        vel[0] *= m_damping;
-        vel[1] *= m_damping;
-        vel[2] *= m_damping;
+        vel[0] *= damping;
+        vel[1] *= damping;
+        vel[2] *= damping;
 
         // new position = old position + velocity * deltaTime
         pos[0] += vel[0] * deltaTime;

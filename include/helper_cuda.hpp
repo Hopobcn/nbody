@@ -1,5 +1,8 @@
 #pragma once
 
+#include <cuda.h>
+#include <cuda_runtime.h>
+
 #include <cstdlib>
 #include <cstdio>
 #include <cstring>
@@ -16,7 +19,7 @@
 
 // CUDA Runtime error messages
 #ifdef __DRIVER_TYPES_H__
-static const char *_cudaGetErrorEnum(cudaError_t error)
+static const char* _cudaGetErrorEnum(cudaError_t error)
 {
     switch (error)
     {
@@ -271,7 +274,7 @@ static const char *_cudaGetErrorEnum(cudaError_t error)
 
 #ifdef __cuda_cuda_h__
 // CUDA Driver API errors
-static const char *_cudaGetErrorEnum(CUresult error)
+static const char* _cudaGetErrorEnum(CUresult error)
 {
     switch (error)
     {
@@ -302,8 +305,35 @@ static const char *_cudaGetErrorEnum(CUresult error)
         case CUDA_ERROR_PROFILER_ALREADY_STOPPED:
             return "CUDA_ERROR_PROFILER_ALREADY_STOPPED";
 
+        case CUDA_ERROR_ILLEGAL_ADDRESS:
+            return "CUDA_ERROR_ILLEGAL_ADDRESS";
+
+        case CUDA_ERROR_HARDWARE_STACK_ERROR:
+            return "CUDA_ERROR_HARDWARE_STACK_ERROR";
+
+        case CUDA_ERROR_ILLEGAL_INSTRUCTION:
+            return "CUDA_ERROR_ILLEGAL_INSTRUCTION";
+
+        case CUDA_ERROR_MISALIGNED_ADDRESS:
+            return "CUDA_ERROR_MISALIGNED_ADDRESS";
+
+        case CUDA_ERROR_INVALID_ADDRESS_SPACE:
+            return "CUDA_ERROR_INVALID_ADDRESS_SPACE";
+
+        case CUDA_ERROR_INVALID_PC:
+            return "CUDA_ERROR_INVALID_PC";
+
+        case CUDA_ERROR_NOT_PERMITTED:
+            return "CUDA_ERROR_NOT_PERMITTED";
+
+        case CUDA_ERROR_NOT_SUPPORTED:
+            return "CUDA_ERROR_NOT_SUPPORTED";
+
         case CUDA_ERROR_NO_DEVICE:
             return "CUDA_ERROR_NO_DEVICE";
+
+        case CUDA_ERROR_INVALID_PTX:
+            return "CUDA_ERROR_INVALID_PTX";
 
         case CUDA_ERROR_INVALID_DEVICE:
             return "CUDA_ERROR_INVALID_DEVICE";
@@ -313,6 +343,9 @@ static const char *_cudaGetErrorEnum(CUresult error)
 
         case CUDA_ERROR_INVALID_CONTEXT:
             return "CUDA_ERROR_INVALID_CONTEXT";
+
+        case CUDA_ERROR_INVALID_GRAPHICS_CONTEXT:
+            return "CUDA_ERROR_INVALID_GRAPHICS_CONTEXT";
 
         case CUDA_ERROR_CONTEXT_ALREADY_CURRENT:
             return "CUDA_ERROR_CONTEXT_ALREADY_CURRENT";
@@ -412,6 +445,9 @@ static const char *_cudaGetErrorEnum(CUresult error)
 
         case CUDA_ERROR_HOST_MEMORY_NOT_REGISTERED:
             return "CUDA_ERROR_HOST_MEMORY_NOT_REGISTERED";
+
+        case CUDA_ERROR_PEER_ACCESS_UNSUPPORTED:
+            return "CUDA_ERROR_PEER_ACCESS_UNSUPPORTED";
 
         case CUDA_ERROR_UNKNOWN:
             return "CUDA_ERROR_UNKNOWN";

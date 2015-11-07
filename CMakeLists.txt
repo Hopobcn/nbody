@@ -32,6 +32,10 @@ endif(CUDA_FOUND)
 
 find_package(OpenGL  REQUIRED)
 if (OPENGL_FOUND)
+    message(STATUS "OpenGL FOUND")
+    message(STATUS "OPENGL_INCLUDE_DIR   ${OPENGL_INCLUDE_DIR}")
+    message(STATUS "OPENGL_LIBRARIES     ${OPENGL_LIBRARIES}")
+
     include_directories(${OPENGL_INCLUDE_DIR})
 else(OPENGL_FOUND)
     message(ERROR " OPENGL not found!")
@@ -39,6 +43,10 @@ endif(OPENGL_FOUND)
 
 find_package(GLUT REQUIRED)
 if (GLUT_FOUND)
+    message(STATUS "OpenGL Utility Toolkit FOUND")
+    message(STATUS "GLUT_INCLUDE_DIR     ${GLUT_INCLUDE_DIR}")
+    message(STATUS "GLUT_LIBRARIES       ${GLUT_LIBRARIES}")
+
     include_directories(${GLUT_INCLUDE_DIR})
 else(GLUT_FOUND)
     message(ERROR " GLUT not found!")
@@ -87,6 +95,8 @@ if (("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang") OR
     include_directories(${CMAKE_SOURCE_DIR}/include)
 
     if (OPENMP_FOUND)
+        add_definitions("-DOPENMP")
+
         set(CMAKE_CXX_FLAGS        "${CMAKE_CXX_FLAGS} -fopenmp")
         set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fopenmp")
     endif()

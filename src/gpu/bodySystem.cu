@@ -141,7 +141,6 @@ computeBodyAccel(typename vec4<T>::Type bodyPos,
 
         // This is the "tile_calculation" from the GPUG3 article.
 #pragma unroll 128
-
         for (unsigned int counter = 0; counter < blockDim.x; counter++)
         {
             acc = bodyBodyInteraction<T>(acc, bodyPos, sharedPos[counter]);

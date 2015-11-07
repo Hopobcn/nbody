@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <fstream>
 
 using namespace std;
 
@@ -79,7 +80,7 @@ void read_file(vector<real4> &bodyPositions,
 
     cout << "Trying to read file: " << fullFileName << endl;
 
-    ifstream inputFile(fullFileName, ios::in | ios::binary);
+    std::ifstream inputFile(fullFileName, ios::in | ios::binary);
 
     if (!inputFile.is_open())
     {

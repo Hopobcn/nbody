@@ -5,6 +5,7 @@
 #pragma once
 
 #include <vector_types.hpp>
+#include <vector_types.h>
 
 template <typename T>
 struct vec3;
