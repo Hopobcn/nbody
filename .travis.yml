@@ -1,0 +1,13 @@
+language: cpp
+
+compiler:
+  - gcc
+  - clang
+
+before_script:
+  - mkdir build
+  - cd build
+  - cmake ..
+  - export OMP_NUM_THREADS=4
+
+script: make
