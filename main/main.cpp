@@ -933,7 +933,6 @@ void key(unsigned char key, int /*x*/, int /*y*/)
             // flushed before the application exits
             cudaDeviceReset();
             exit(EXIT_SUCCESS);
-            break;
 
         case 13: // return
             if (bSupportDouble)
