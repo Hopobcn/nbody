@@ -4,8 +4,8 @@
 
 #pragma once
 
-#include <vector_types.hpp>
-#include <vector_types.h>
+#include <vector_types.h>   // CUDA header that defines float2,float3,float4,double2, etc..
+#include <vector_types.hpp> // My own header with struct vec3/vec4 template types.
 
 template <typename T>
 struct vec3;
