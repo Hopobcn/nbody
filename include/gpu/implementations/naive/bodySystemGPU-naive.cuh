@@ -15,6 +15,7 @@
 #include <cuda_runtime_api.h>
 #include <cuda_gl_interop.h>
 
+#include <gpu/math.cuh>
 #include <vector_types.hpp>
 #include <gpu/bodySystemGPU.hpp>
 
@@ -53,23 +54,7 @@ struct SharedMemory
     }
 };
 
-template<typename T>
-DEVICE_INLINE T rsqrt_T(T x)
-{
-return rsqrt(x);
-}
 
-template<>
-DEVICE_INLINE float rsqrt_T<float>(float x)
-{
-    return rsqrtf(x);
-}
-
-template<>
-DEVICE_INLINE double rsqrt_T<double>(double x)
-{
-    return rsqrt(x);
-}
 
 
 // Macros to simplify shared memory addressing
@@ -102,7 +87,7 @@ bodyBodyInteraction(typename vec3<T>::Type ai,
     distSqr  += getSofteningSquared<T>();
 
     // invDistCube =1/distSqr^(3/2)  [4 FLOPS (2 mul, 1 sqrt, 1 inv)]
-    T invDist     = rsqrt_T(distSqr);
+    T invDist     = cuda::rsqrt(distSqr);
     T invDistCube = invDist * invDist * invDist;
 
     // s = m_j * invDistCube [1 FLOP]
