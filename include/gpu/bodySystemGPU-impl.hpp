@@ -9,8 +9,9 @@
 #include <vector>
 #include <algorithm>
 #include <GL/glew.h>
-
 #include <cuda_gl_interop.h>
+
+#include <helper_cuda.hpp>
 
 template <typename T>
 void integrateNbodySystem(DeviceData<T> *deviceData,
