@@ -1109,7 +1109,7 @@ main(int argc, char **argv)
         if (numDevsRequested < 1)
         {
             printf("Error: \"number of CUDA devices\" specified %d is invalid.  Value should be >= 1\n", numDevsRequested);
-            exit(bTestResults ? EXIT_SUCCESS : EXIT_FAILURE);
+            exit(EXIT_FAILURE);
         }
         else
         {
@@ -1342,7 +1342,7 @@ main(int argc, char **argv)
         if (numBodies < 1)
         {
             printf("Error: \"number of bodies\" specified %d is invalid.  Value should be >= 1\n", numBodies);
-            exit(bTestResults ? EXIT_SUCCESS : EXIT_FAILURE);
+            exit(EXIT_FAILURE);
         }
         else if (numBodies % blockSize)
         {
