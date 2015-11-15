@@ -20,9 +20,6 @@ void integrateNbodySystem(DeviceData<T> *deviceData,
                           unsigned int numBodies, unsigned int numDevices,
                           int blockSize, bool bUsePBO);
 
-cudaError_t setSofteningSquared(float softeningSq);
-cudaError_t setSofteningSquared(double softeningSq);
-
 template<typename T>
 BodySystemGPU<T>::BodySystemGPU(unsigned int numBodies,
                                   unsigned int numDevices,
@@ -253,6 +250,8 @@ void BodySystemGPU<T>::loadFile(const std::string &filename)
     setArray(BODYSYSTEM_VELOCITY, (T *)&velocities[0]);
 }
 
+cudaError_t setSofteningSquared(float softeningSq);
+cudaError_t setSofteningSquared(double softeningSq);
 
 template<typename T>
 void BodySystemGPU<T>::setSoftening(T softening)
