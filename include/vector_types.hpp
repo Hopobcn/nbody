@@ -5,6 +5,7 @@
 #pragma once
 
 #include <utils.hpp>
+#include <gpu/math.cuh>
 #include <vector_type_traits.hpp>
 
 
@@ -118,6 +119,28 @@ HOST_DEVICE_INLINE T euclideanDist(const vec3<T>& a, const vec3<T>& b) {
     return sqrt(dot(r, r));
 }
 
+namespace types {
+
+template <typename T>
+DEVICE_INLINE vec3<T> max(const vec3<T>& a, const vec3<T>& b) {
+    vec3<T> r;
+    r.x = cuda::max(a.x, b.x);
+    r.y = cuda::max(a.y, b.y);
+    r.z = cuda::max(a.z, b.z);
+    return r;
+}
+
+template <typename T>
+DEVICE_INLINE vec3<T> min(const vec3<T>& a, const vec3<T>& b) {
+    vec3<T> r;
+    r.x = cuda::min(a.x, b.x);
+    r.y = cuda::min(a.y, b.y);
+    r.z = cuda::min(a.z, b.z);
+    return r;
+}
+
+} // end namespace types
+
 
 template <typename T>
 struct vec4 {
@@ -229,3 +252,25 @@ HOST_DEVICE_INLINE vec3<T> operator*(const vec4<T>& a, const vec4<T>& b) {
     r.z = a.z * b.z;
     return r;
 }
+
+namespace types {
+
+template <typename T>
+DEVICE_INLINE vec3<T> max(const vec3<T>& a, const vec4<T>& b) {
+    vec3<T> r;
+    r.x = cuda::max(a.x, b.x);
+    r.y = cuda::max(a.y, b.y);
+    r.z = cuda::max(a.z, b.z);
+    return r;
+}
+
+template <typename T>
+DEVICE_INLINE vec3<T> min(const vec3<T>& a, const vec4<T>& b) {
+    vec3<T> r;
+    r.x = cuda::min(a.x, b.x);
+    r.y = cuda::min(a.y, b.y);
+    r.z = cuda::min(a.z, b.z);
+    return r;
+}
+
+} // end namespace types
