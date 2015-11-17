@@ -1,5 +1,14 @@
+#include <GL/glew.h>
+#if defined(__APPLE__) || defined(MACOSX)
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+#include <GLUT/glut.h>
+#else
+#include <GL/freeglut.h>
+#endif
 
+#include <vector_types.hpp>
 #include <gpu/implementations/naive/bodySystemGPU-naive.cuh>
+#include <gpu/implementations/barnes-hut/bodySystemGPU-barnes-hut.cuh>
 
 template <typename T>
 void integrateNbodySystem(DeviceData<T> *deviceData,
@@ -32,7 +41,7 @@ void integrateNbodySystem(DeviceData<T> *deviceData,
         int numBlocks = (deviceData[dev].numBodies + blockSize-1) / blockSize;
         int numTiles = (numBodies + blockSize - 1) / blockSize;
         int sharedMemSize = blockSize * 4 * sizeof(T); // 4 floats for pos
-
+#if 0
         integrateBodies<T><<< numBlocks, blockSize, sharedMemSize >>>
                         ((typename vec4<T>::VecType *)deviceData[dev].dPos[1-currentRead],
                          (typename vec4<T>::VecType *)deviceData[dev].dPos[currentRead],
@@ -40,6 +49,13 @@ void integrateNbodySystem(DeviceData<T> *deviceData,
                                                    deviceData[dev].offset,
                                                    deviceData[dev].numBodies,
                                                    deltaTime, damping, numTiles);
+#else
+        calculateBoundingBox<T, 256><<<numBlocks, blockSize, sharedMemSize>>>
+                        ((typename vec4<T>::VecType *)deviceData[dev].dPos[1-currentRead],
+                         (typename vec4<T>::VecType *)deviceData[dev].dPos[currentRead],
+                         (typename vec4<T>::VecType *)deviceData[dev].dVel,
+                         numBodies, numTiles);
+#endif
 
         if (numDevices > 1)
         {

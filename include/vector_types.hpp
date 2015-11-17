@@ -57,6 +57,22 @@ struct vec3 {
         z *= scalar;
         return *this;
     }
+
+    DEVICE_INLINE Type max(const Type& lhs) const {
+        Type r;
+        r.x = cuda::max(this->x, lhs.x);
+        r.y = cuda::max(this->y, lhs.y);
+        r.z = cuda::max(this->z, lhs.z);
+        return r;
+    }
+
+    DEVICE_INLINE Type min(const Type& lhs) const {
+        Type r;
+        r.x = cuda::min(this->x, lhs.x);
+        r.y = cuda::min(this->y, lhs.y);
+        r.z = cuda::min(this->z, lhs.z);
+        return r;
+    }
 };
 
 template <typename T>
@@ -122,7 +138,7 @@ HOST_DEVICE_INLINE T euclideanDist(const vec3<T>& a, const vec3<T>& b) {
 namespace types {
 
 template <typename T>
-DEVICE_INLINE vec3<T> max(const vec3<T>& a, const vec3<T>& b) {
+static DEVICE_INLINE vec3<T> max(const vec3<T>& a, const vec3<T>& b) {
     vec3<T> r;
     r.x = cuda::max(a.x, b.x);
     r.y = cuda::max(a.y, b.y);
@@ -131,7 +147,7 @@ DEVICE_INLINE vec3<T> max(const vec3<T>& a, const vec3<T>& b) {
 }
 
 template <typename T>
-DEVICE_INLINE vec3<T> min(const vec3<T>& a, const vec3<T>& b) {
+static DEVICE_INLINE vec3<T> min(const vec3<T>& a, const vec3<T>& b) {
     vec3<T> r;
     r.x = cuda::min(a.x, b.x);
     r.y = cuda::min(a.y, b.y);
@@ -256,7 +272,7 @@ HOST_DEVICE_INLINE vec3<T> operator*(const vec4<T>& a, const vec4<T>& b) {
 namespace types {
 
 template <typename T>
-DEVICE_INLINE vec3<T> max(const vec3<T>& a, const vec4<T>& b) {
+static DEVICE_INLINE vec3<T> max(const vec3<T>& a, const vec4<T>& b) {
     vec3<T> r;
     r.x = cuda::max(a.x, b.x);
     r.y = cuda::max(a.y, b.y);
@@ -265,7 +281,7 @@ DEVICE_INLINE vec3<T> max(const vec3<T>& a, const vec4<T>& b) {
 }
 
 template <typename T>
-DEVICE_INLINE vec3<T> min(const vec3<T>& a, const vec4<T>& b) {
+static DEVICE_INLINE vec3<T> min(const vec3<T>& a, const vec4<T>& b) {
     vec3<T> r;
     r.x = cuda::min(a.x, b.x);
     r.y = cuda::min(a.y, b.y);

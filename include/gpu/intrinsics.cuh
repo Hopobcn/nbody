@@ -40,10 +40,9 @@ T warpReduce(T val, OperationType op, unsigned warpSize=32) {
 template <typename T, typename OperationType, int BLOCK_DIM_X>
 DEVICE_INLINE
 T blockReduce(T value, OperationType op, unsigned warpSize = 32) {
-    static __shared__ T
-    warp_reductions[32];
+    static __shared__ T warp_reductions[32];
     int lane = threadIdx.x % warpSize;
-    int wid = threadIdx.x / warpSize;
+    int wid  = threadIdx.x / warpSize;
 
     value = cuda::warpReduce(value, op);
 
@@ -51,7 +50,8 @@ T blockReduce(T value, OperationType op, unsigned warpSize = 32) {
     __syncthreads();
 
     //read from shared memory only if that warp existed
-    value = (threadIdx.x < blockDim.x / warpSize) ? warp_reductions[lane] : 0;
+    //value = (threadIdx.x < blockDim.x / warpSize) ? warp_reductions[lane] : 0;
+    value = warp_reductions[lane];
 
     if (wid==0) value = cuda::warpReduce(value, op); //Final reduce within first warp
 

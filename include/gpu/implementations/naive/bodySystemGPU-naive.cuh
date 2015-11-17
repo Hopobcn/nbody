@@ -2,14 +2,6 @@
 
 #include <cmath>
 
-#include <GL/glew.h>
-#if defined(__APPLE__) || defined(MACOSX)
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-#include <GLUT/glut.h>
-#else
-#include <GL/freeglut.h>
-#endif
-
 // CUDA standard includes
 #include <cuda_runtime.h>
 #include <cuda_runtime_api.h>
